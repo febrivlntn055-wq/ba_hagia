@@ -1,0 +1,382 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamat Ulang Tahun Sera! 🎉</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Pacifico, Fredoka & Quicksand untuk nuansa ceria, lembut, dan estetik -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Pacifico&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti untuk efek perayaan meriah -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        h1, h2, .font-display {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .font-script {
+            font-family: 'Pacifico', cursive;
+        }
+
+        /* Animasi melayang untuk balon dan boneka */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-18px) rotate(3deg); }
+        }
+
+        @keyframes floatFast {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(-4deg); }
+        }
+
+        @keyframes bounceGentle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(244, 114, 182, 0.5); }
+            50% { box-shadow: 0 0 35px rgba(236, 72, 153, 0.85); }
+        }
+
+        /* Animasi api lilin berkedip */
+        @keyframes flicker {
+            0%, 100% { transform: scale(1) rotate(-2deg); opacity: 0.95; }
+            25% { transform: scale(1.08) rotate(2deg); opacity: 1; }
+            50% { transform: scale(0.95) rotate(-1deg); opacity: 0.9; }
+            75% { transform: scale(1.05) rotate(3deg); opacity: 1; }
+        }
+
+        /* Animasi musim kelopak bunga & bintang jatuh */
+        @keyframes seasonFall {
+            0% {
+                transform: translateY(-10vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.9;
+            }
+            85% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(110vh) translateX(35px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Animasi bintang berkilau */
+        @keyframes twinkle {
+            0%, 100% { transform: scale(0.7); opacity: 0.35; }
+            50% { transform: scale(1.25); opacity: 1; }
+        }
+
+        /* Animasi asap saat lilin ditiup */
+        @keyframes smokeRise {
+            0% { transform: translateY(0) scale(0.6); opacity: 0.8; }
+            100% { transform: translateY(-35px) scale(1.6); opacity: 0; }
+        }
+
+        /* Animasi masuk tiap halaman */
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.92) translateY(15px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .animate-float-slow {
+            animation: floatSlow 4.5s ease-in-out infinite;
+        }
+
+        .animate-float-fast {
+            animation: floatFast 3.5s ease-in-out infinite;
+        }
+
+        .animate-bounce-gentle {
+            animation: bounceGentle 2.5s ease-in-out infinite;
+        }
+
+        .animate-pulse-glow {
+            animation: pulseGlow 2.2s infinite;
+        }
+
+        .candle-flame {
+            transform-origin: bottom center;
+            animation: flicker 0.9s infinite alternate;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .candle-blown {
+            opacity: 0 !important;
+            transform: scale(0) !important;
+            animation: none !important;
+        }
+
+        .smoke-puff {
+            animation: smokeRise 1.4s ease-out forwards;
+        }
+
+        .season-particle {
+            position: fixed;
+            top: -50px;
+            pointer-events: none;
+            z-index: 2;
+            animation: seasonFall linear infinite;
+        }
+
+        .twinkle-star {
+            animation: twinkle 2.4s ease-in-out infinite;
+        }
+
+        .step-enter {
+            animation: fadeInScale 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        /* Efek kaca buram lembut (Glassmorphism) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+        }
+
+        /* Tombol pilihan kuis */
+        .option-btn {
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .option-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+        }
+        .option-btn:active {
+            transform: scale(0.97);
+        }
+    </style>
+</head>
+<body class="min-h-screen w-full relative flex items-center justify-center p-4 bg-gradient-to-br from-pink-200 via-rose-100 to-amber-100 transition-colors duration-1000" id="main-body">
+
+    <!-- Tombol Kontrol Musik (Pojok Kanan Atas) -->
+    <button id="music-toggle" onclick="toggleMusic()" aria-label="Putar atau Matikan Musik"
+        class="fixed top-4 right-4 z-50 bg-white/90 hover:bg-white text-pink-600 font-bold px-4 py-2.5 rounded-full shadow-lg border-2 border-pink-200 flex items-center gap-2 transition transform hover:scale-105 active:scale-95 text-sm cursor-pointer">
+        <span id="music-icon" class="text-lg">🔇</span>
+        <span id="music-label">Putar Lagu</span>
+    </button>
+
+    <!-- Wadah Partikel Musim Perayaan (Kelopak Bunga, Bintang Berkilau, Hati Pastel) -->
+    <div id="season-particles-container" class="fixed inset-0 pointer-events-none overflow-hidden z-[1]"></div>
+
+    <!-- =====================================================================
+         LATAR BELAKANG 1: BONEKA BERUANG LUCU & BALON WARNA-WARNI
+         (Muncul pada Step 1, 2, dan 3)
+    ====================================================================== -->
+    <div id="bg-bear-balloons" class="fixed inset-0 pointer-events-none overflow-hidden z-0 transition-opacity duration-700">
+        <!-- Dekorasi Cahaya Lembut -->
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-pink-300/40 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-10 -right-16 w-80 h-80 bg-yellow-200/50 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 bg-purple-200/30 rounded-full blur-3xl"></div>
+
+        <!-- Balon Kiri Atas (Pink) -->
+        <svg class="w-24 h-36 sm:w-32 sm:h-44 absolute top-6 left-4 sm:left-12 animate-float-slow opacity-90" viewBox="0 0 100 150">
+            <path d="M50 95 Q45 120 55 145" stroke="#f472b6" stroke-width="2" fill="none"/>
+            <ellipse cx="50" cy="48" rx="34" ry="42" fill="#f472b6"/>
+            <ellipse cx="38" cy="34" rx="8" ry="14" transform="rotate(-20 38 34)" fill="#fbcfe8" opacity="0.7"/>
+            <polygon points="45,90 55,90 50,97" fill="#db2777"/>
+        </svg>
+
+        <!-- Balon Kanan Atas (Kuning & Ungu) -->
+        <svg class="w-28 h-40 sm:w-36 sm:h-48 absolute top-10 right-4 sm:right-14 animate-float-fast opacity-90" viewBox="0 0 120 160">
+            <!-- Balon Ungu Belakang -->
+            <path d="M40 85 Q35 115 45 145" stroke="#c084fc" stroke-width="2" fill="none"/>
+            <ellipse cx="40" cy="44" rx="28" ry="35" fill="#c084fc"/>
+            <ellipse cx="31" cy="32" rx="6" ry="11" transform="rotate(-20 31 32)" fill="#f3e8ff" opacity="0.7"/>
+            <polygon points="36,79 44,79 40,85" fill="#9333ea"/>
+            <!-- Balon Kuning Depan -->
+            <path d="M78 95 Q85 125 72 155" stroke="#fbbf24" stroke-width="2" fill="none"/>
+            <ellipse cx="78" cy="50" rx="32" ry="39" fill="#fbbf24"/>
+            <ellipse cx="67" cy="36" rx="7" ry="13" transform="rotate(-20 67 36)" fill="#fef3c7" opacity="0.8"/>
+            <polygon points="73,89 83,89 78,96" fill="#d97706"/>
+        </svg>
+
+        <!-- Balon Kiri Bawah (Biru Pastel) -->
+        <svg class="w-20 h-32 sm:w-28 sm:h-40 absolute bottom-6 left-4 sm:left-16 animate-float-fast opacity-85" viewBox="0 0 100 150">
+            <path d="M50 95 Q56 120 46 145" stroke="#60a5fa" stroke-width="2" fill="none"/>
+            <ellipse cx="50" cy="48" rx="32" ry="40" fill="#60a5fa"/>
+            <ellipse cx="38" cy="34" rx="7" ry="13" transform="rotate(-20 38 34)" fill="#dbeafe" opacity="0.75"/>
+            <polygon points="45,88 55,88 50,95" fill="#2563eb"/>
+        </svg>
+
+        <!-- Ilustrasi Boneka Beruang Lucu (Teddy Bear) di Kanan Bawah -->
+        <svg class="w-40 h-40 sm:w-56 sm:h-56 absolute -bottom-3 right-1 sm:right-10 animate-float-slow drop-shadow-xl" viewBox="0 0 220 220">
+            <!-- Telinga Kiri -->
+            <!-- Tangan Beruang Memegang Kado & Hati -->
+            <ellipse cx="64" cy="162" rx="16" ry="22" transform="rotate(25 64 162)" fill="#d99b52"/>
+            <ellipse cx="156" cy="162" rx="16" ry="22" transform="rotate(-25 156 162)" fill="#d99b52"/>
+            <!-- Kotak Kado Mini di Pangkuan Beruang -->
+            <rect x="84" y="152" width="52" height="40" rx="8" fill="#f43f5e"/>
+            <rect x="80" y="146" width="60" height="11" rx="4" fill="#fb7185"/>
+            <rect x="106" y="146" width="8" height="46" fill="#fde047"/>
+            <rect x="84" y="168" width="52" height="7" fill="#fde047"/>
+            <!-- Pita Kado -->
+            <circle cx="104" cy="143" r="6" fill="none" stroke="#fde047" stroke-width="3.5"/>
+            <circle cx="116" cy="143" r="6" fill="none" stroke="#fde047" stroke-width="3.5"/>
+        </svg>
+    </div>
+
+    <!-- =====================================================================
+         LATAR BELAKANG 2: KUE ULANG TAHUN MERIAH DENGAN LILIN MENYALA
+         (Muncul khusus pada Step 4 / Akhir)
+    ====================================================================== -->
+    <div id="bg-birthday-cake" class="fixed inset-0 overflow-hidden z-0 hidden opacity-0 transition-opacity duration-1000">
+        <!-- Cahaya Hangat Latar Kue -->
+        <div class="absolute inset-0 pointer-events-none bg-gradient-to-b from-rose-200/60 via-amber-100/70 to-pink-300/70"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none w-[520px] h-[520px] bg-yellow-200/60 rounded-full blur-3xl"></div>
+
+        <!-- Bintang-Bintang Berkilau di Langit Pesta -->
+        <div class="absolute inset-0 pointer-events-none">
+            <span class="twinkle-star absolute top-20 left-[12%] text-2xl">✨</span>
+            <span class="twinkle-star absolute top-28 right-[15%] text-3xl" style="animation-delay: 0.6s;">🌟</span>
+            <span class="twinkle-star absolute top-44 left-[22%] text-xl" style="animation-delay: 1.2s;">✨</span>
+            <span class="twinkle-star absolute top-40 right-[24%] text-2xl" style="animation-delay: 1.8s;">⭐</span>
+        </div>
+
+        <!-- Bunting Flags / Bendera Pesta di Atas -->
+        <svg class="w-full h-24 sm:h-32 absolute top-0 left-0 pointer-events-none" viewBox="0 0 800 120" preserveAspectRatio="none">
+            <path d="M0 10 Q400 75 800 10" stroke="#ec4899" stroke-width="3" fill="none"/>
+            <polygon points="40,18 85,25 58,62" fill="#f43f5e"/>
+            <polygon points="120,30 165,36 138,74" fill="#fbbf24"/>
+            <polygon points="200,39 245,43 220,82" fill="#34d399"/>
+            <polygon points="280,45 325,47 302,86" fill="#60a5fa"/>
+            <polygon points="360,48 405,48 382,88" fill="#a855f7"/>
+            <polygon points="440,47 485,45 462,86" fill="#f43f5e"/>
+            <polygon points="520,43 565,39 542,82" fill="#fbbf24"/>
+            <polygon points="600,36 645,30 622,74" fill="#34d399"/>
+            <polygon points="680,25 725,18 702,62" fill="#60a5fa"/>
+        </svg>
+
+        <!-- Ilustrasi Kue Ulang Tahun Raksasa di Bagian Bawah/Tengah Layar (Bisa Diklik untuk Tiup Lilin) -->
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-xl flex flex-col items-center justify-end z-10">
+            <span id="candle-hint" class="mb-1 px-3 py-1 rounded-full bg-white/80 text-pink-600 font-bold text-xs shadow-sm animate-bounce pointer-events-none">
+                👆 Klik kue untuk tiup / nyalakan lilin!
+            </span>
+            <svg id="birthday-cake-svg" onclick="toggleCandles()" class="w-[340px] sm:w-[460px] h-auto drop-shadow-2xl cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.99]" viewBox="0 0 400 340">
+                <!-- Piring Kue -->
+                <ellipse cx="200" cy="315" rx="175" ry="20" fill="#ffffff"/>
+                <ellipse cx="200" cy="312" rx="160" ry="14" fill="#fce7f3"/>
+
+                <!-- Tingkat Bawah Kue (Cokelat Stroberi Lembut) -->
+                <rect x="65" y="220" width="270" height="90" rx="18" fill="#f472b6"/>
+                <rect x="65" y="255" width="270" height="14" fill="#fbcfe8"/>
+                <!-- Lelehan Krim Putih Tingkat Bawah -->
+                <path d="M65 225 Q82 250 100 228 Q118 255 136 228 Q154 252 172 228 Q190 256 208 228 Q226 252 244 228 Q262 255 280 228 Q298 250 316 228 Q328 242 335 225 L335 215 L65 215 Z" fill="#fff1f2"/>
+                <!-- Hiasan Ceri di Tingkat Bawah -->
+                <circle cx="100" cy="215" r="8" fill="#e11d48"/>
+                <circle cx="150" cy="215" r="8" fill="#e11d48"/>
+                <circle cx="250" cy="215" r="8" fill="#e11d48"/>
+                <circle cx="300" cy="215" r="8" fill="#e11d48"/>
+
+                <!-- Tingkat Atas Kue (Vanila & Kuning Pastel) -->
+                <rect x="105" y="140" width="190" height="80" rx="16" fill="#fde047"/>
+                <!-- Lelehan Krim Pink Tingkat Atas -->
+                <path d="M105 148 Q122 174 140 150 Q158 178 176 150 Q194 176 212 150 Q230 178 248 150 Q266 174 284 150 Q290 160 295 148 L295 138 L105 138 Z" fill="#f43f5e"/>
+
+                <!-- Taburan Meses Warna-warni -->
+                <rect x="130" y="185" width="10" height="4" rx="2" transform="rotate(25 130 185)" fill="#ec4899"/>
+                <rect x="170" y="195" width="10" height="4" rx="2" transform="rotate(-15 170 195)" fill="#3b82f6"/>
+                <rect x="215" y="182" width="10" height="4" rx="2" transform="rotate(40 215 182)" fill="#10b981"/>
+                <rect x="255" y="194" width="10" height="4" rx="2" transform="rotate(-30 255 194)" fill="#a855f7"/>
+
+                <!-- 3 Lilin Ulang Tahun -->
+                <!-- Lilin Kiri -->
+                <rect x="145" y="92" width="12" height="46" rx="4" fill="#60a5fa"/>
+                <path d="M145 104 L157 110 M145 118 L157 124" stroke="#ffffff" stroke-width="3"/>
+                <g class="flame-group">
+                    <path class="candle-flame" d="M151 64 C159 76 159 88 151 90 C143 88 143 76 151 64 Z" fill="#fb923c"/>
+                    <path class="candle-flame" d="M151 72 C155 79 155 86 151 88 C147 86 147 79 151 72 Z" fill="#fef08a"/>
+                </g>
+
+                <!-- Lilin Tengah -->
+                <rect x="194" y="84" width="12" height="54" rx="4" fill="#f472b6"/>
+                <path d="M194 98 L206 104 M194 114 L206 120" stroke="#ffffff" stroke-width="3"/>
+                <g class="flame-group">
+                    <path class="candle-flame" d="M200 54 C209 67 209 80 200 82 C191 80 191 67 200 54 Z" fill="#fb923c"/>
+                    <path class="candle-flame" d="M200 63 C204 71 204 78 200 80 C196 78 196 71 200 63 Z" fill="#fef08a"/>
+                </g>
+
+                <!-- Lilin Kanan -->
+                <rect x="243" y="92" width="12" height="46" rx="4" fill="#34d399"/>
+                <path d="M243 104 L255 110 M243 118 L255 124" stroke="#ffffff" stroke-width="3"/>
+                <g class="flame-group">
+                    <path class="candle-flame" d="M249 64 C257 76 257 88 249 90 C241 88 241 76 249 64 Z" fill="#fb923c"/>
+                    <path class="candle-flame" d="M249 72 C253 79 253 86 249 88 C245 86 245 79 249 72 Z" fill="#fef08a"/>
+                </g>
+
+                <!-- Grup Asap Saat Lilin Ditiup -->
+                <g id="candle-smoke-group" class="hidden">
+                    <circle cx="151" cy="75" r="6" fill="#e2e8f0" class="smoke-puff"/>
+                    <circle cx="200" cy="65" r="7" fill="#e2e8f0" class="smoke-puff"/>
+                    <circle cx="249" cy="75" r="6" fill="#e2e8f0" class="smoke-puff"/>
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         KONTEN UTAMA (4 TAHAP INTERAKTIF)
+    ====================================================================== -->
+    <main class="relative z-10 w-full max-w-lg mx-auto">
+
+        <!-- TAHAP 1: TAMPILAN AWAL -->
+        <section id="step-1" class="glass-card rounded-3xl p-7 sm:p-10 text-center shadow-2xl step-enter">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-pink-100 text-4xl mb-4 shadow-inner animate-bounce-gentle">
+                🧸🎈
+            </div>
+            <p class="text-pink-500 font-bold tracking-wider uppercase text-xs sm:text-sm mb-2">
+                ✨ Spesial Hari Ini ✨
+            </p>
+            <h1 class="text-3xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-rose-500 to-amber-500 leading-tight mb-6 drop-shadow-sm">
+                Selamat Ulang Tahun Sera
+            </h1>
+            <p class="text-gray-600 text-sm sm:text-base mb-8">
+                Ada kejutan kecil buat kamu hari ini. Siap buka?
+            </p>
+            <button onclick="goToStep(2)"
+                class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-display font-bold text-lg sm:text-xl shadow-lg animate-pulse-glow transition transform hover:scale-105 active:scale-95 cursor-pointer">
+                Klik Lanjut 👉
+            </button>
+        </section>
+
+        <!-- TAHAP 2: PERTANYAAN & PILIHAN ABC -->
+        <section id="step-2" class="glass-card rounded-3xl p-7 sm:p-10 text-center shadow-2xl hidden">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 text-3xl mb-4 shadow-inner">
+                🤔🎂
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+                Hari ini siapa yang ultah?
+            </h2>
+            <p class="text-gray-500 text-sm mb-6">
+                Pilih jawaban yang paling tepat ya!
+            </p>
+
+            <!-- Kotak Pesan Reaksi Lucu (jika memilih A atau B sebelum lanjut) -->
+            <div id="quiz-feedback" class="hidden mb-4 p-3 rounded-2xl bg-pink-100 border border-pink-300 text-pink-700 font-semibold text-sm transition-all">
+            </div>
+
+            <!-- Pilihan Jawaban A, B, C -->
+            <div class="space-y-3.5 text-left">
+                <button onclick="handleAnswer('A')"
+                    class="option-btn w-full p-4 rounded-2xl bg-white hover:bg-pink-50 border-2 border-pink-200 hover:border-pink-400 shadow-sm flex items-center gap-4 cursor-pointer">
+                    <span class="w-10 h-10 rounded-xl bg-pink-500 text-white font-display font-bold flex items-center justify-center text-lg shrink-0">
+                        A
+                    </span>
+                    <span class="font-bold text-gray-700 text-lg">Aku</span>
+                </button>
+
+                <button onclick="handleAnswer('B')"
+                    class="option-btn w-full p-4 rounded-2xl bg-white hover:bg-purple-50 border-2 border-purple-200 hover:border-purp
